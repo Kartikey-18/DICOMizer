@@ -1,4 +1,5 @@
 ﻿using FellowOakDicom;
+using FellowOakDicom.Imaging;
 using FellowOakDicom.IO.Buffer;
 using Microsoft.Win32;
 using System;
@@ -15,15 +16,14 @@ namespace DICOMizer
     public partial class MainWindow : Window
     {
         // ==== Tunables (safe defaults for eUnity) ====
-        private const int TARGET_FPS = 30;             // Browser/eUnity-friendly
-        private const bool USE_BD_COMPAT = true;       // true => TS 1.2.840.10008.1.2.4.103 (BD-compatible), false => 4.102
-        private const bool ADD_NUMBER_OF_FRAMES = true;// Add NumberOfFrames (some viewers expect it)
-        private const string MODALITY = "ES";          // "ES" endoscopy, or "XC" if you swap SOP to Video Photographic
-        private const int FRAGMENT_BYTES = 256 * 1024; // 256 KB fragments (smaller = safer through gateways)
+        private const int TARGET_FPS = 30;               // Browser/eUnity-friendly
+        private const bool USE_BD_COMPAT = true;         // true => TS 1.2.840.10008.1.2.4.103 (BD-compatible), false => 4.102
+        private const bool ADD_NUMBER_OF_FRAMES = false; // Only set true if you compute exact frame count
+        private const string MODALITY = "ES";            // "ES" endoscopy, or "XC" if you swap SOP to Video Photographic
 
         private string selectedFile = "";
         private string lastDicomPath = "";
-        private Process process;
+        private Process? process;
 
         private string ToolPath(string relative) =>
             System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, relative);
@@ -65,10 +65,9 @@ namespace DICOMizer
                 progressBar.Value = 8;
                 await RunProcessAsync(dcmdump, "--version");
 
-                // Get source duration (for NumberOfFrames estimate post-transcode)
                 statusText.Text = "Probing source duration…";
                 progressBar.Value = 16;
-                double srcDurationSec = await GetDurationSecondsAsync(selectedFile, ffprobe, ffmpeg); // robust probe
+                double _ = await GetDurationSecondsAsync(selectedFile, ffprobe, ffmpeg); // We won't guess NumberOfFrames from this
 
                 statusText.Text = "Transcoding to raw Annex-B H.264 (High@L4.1)…";
                 progressBar.Value = 40;
@@ -91,13 +90,8 @@ namespace DICOMizer
 
                 await RunProcessAsync(ffmpeg, ffArgs);
 
-                // Probe dimensions from the **raw** stream (fps is forced)
                 var (w, h, _) = ProbeVideo(ffmpeg, preppedRaw);
                 if (w <= 0 || h <= 0) { w = 1280; h = 720; }
-
-                // Estimate NumberOfFrames from the *source* duration and our CFR target.
-                // (Using source duration is typically good enough; viewers mainly need a non-zero integer.)
-                int estFrames = Math.Max(1, (int)Math.Round(srcDurationSec * TARGET_FPS, MidpointRounding.AwayFromZero));
 
                 statusText.Text = "Wrapping as DICOM (Video Endoscopic Image Storage)…";
                 progressBar.Value = 85;
@@ -105,8 +99,22 @@ namespace DICOMizer
                 double fps = TARGET_FPS;
                 int cineRate = TARGET_FPS;
 
+                // We won't add NumberOfFrames unless computed exactly.
+                int exactFrames = 0;
+                if (ADD_NUMBER_OF_FRAMES)
+                    exactFrames = await TryGetExactFrameCountAsync(FfprobeExe(), selectedFile);
+
+                // Get patient ID and accession number from UI
+                string patientId = "";
+                string accessionNumber = "";
+                Dispatcher.Invoke(() =>
+                {
+                    patientId = patientIdTextBox.Text;
+                    accessionNumber = accessionNumberTextBox.Text;
+                });
+
                 lastDicomPath = MakeDicomVideoFromRaw(
-                    preppedRaw, IOPath.GetDirectoryName(selectedFile)!, w, h, fps, cineRate, estFrames);
+                    preppedRaw, IOPath.GetDirectoryName(selectedFile)!, w, h, fps, cineRate, exactFrames, patientId, accessionNumber);
 
                 progressBar.Value = 100;
                 statusText.Text = $"Done. DICOM saved:\n{lastDicomPath}";
@@ -136,7 +144,7 @@ namespace DICOMizer
                     if (!string.IsNullOrWhiteSpace(ev.Data))
                         Dispatcher.Invoke(() => statusText.Text = ev.Data);
                 };
-                process.ErrorDataReceived += (s, ev) => { /* ffmpeg progress on stderr if needed */ };
+                process.ErrorDataReceived += (s, ev) => { /* ffmpeg progress is on stderr; ignore */ };
                 process.Start();
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
@@ -146,7 +154,6 @@ namespace DICOMizer
             });
         }
 
-        // Try ffprobe first; if missing, parse "Duration: HH:MM:SS.xx" from ffmpeg -i stderr.
         private async Task<double> GetDurationSecondsAsync(string path, string ffprobeExe, string ffmpegExe)
         {
             if (File.Exists(ffprobeExe))
@@ -161,7 +168,6 @@ namespace DICOMizer
                 catch { /* fall through to ffmpeg parser */ }
             }
 
-            // Fallback: use ffmpeg to print metadata and parse "Duration:" line
             try
             {
                 string stderr = await RunProcessCaptureStderrAsync(ffmpegExe, $"-hide_banner -i \"{path}\"");
@@ -175,9 +181,23 @@ namespace DICOMizer
                 }
             }
             catch { }
+            return 1.0; // fallback default
+        }
 
-            // Worst-case default (keeps things moving)
-            return 1.0; // 1 second
+        private async Task<int> TryGetExactFrameCountAsync(string ffprobeExe, string videoPath)
+        {
+            if (!File.Exists(ffprobeExe)) return 0;
+            try
+            {
+                string args = $"-v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames " +
+                              "-of default=nokey=1:noprint_wrappers=1 " +
+                              $"\"{videoPath}\"";
+                string outText = await RunProcessCaptureStdoutAsync(ffprobeExe, args);
+                if (int.TryParse(outText.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int n) && n > 0)
+                    return n;
+            }
+            catch { }
+            return 0;
         }
 
         private Task<string> RunProcessCaptureStdoutAsync(string fileName, string arguments)
@@ -251,7 +271,7 @@ namespace DICOMizer
             return (width, height, fps);
         }
 
-        private string MakeDicomVideoFromRaw(string rawPath, string outFolder, int width, int height, double fps, int cineRate, int estimatedFrames)
+        private string MakeDicomVideoFromRaw(string rawPath, string outFolder, int width, int height, double fps, int cineRate, int exactFrames, string patientId, string accessionNumber)
         {
             // SOP Class: Video Endoscopic Image Storage
             var sopClassUid = DicomUID.Parse("1.2.840.10008.5.1.4.1.1.77.1.1.1");
@@ -261,35 +281,56 @@ namespace DICOMizer
 
             var now = DateTime.Now;
 
-            var ds = new DicomDataset(ts)
+            // Use provided patient ID or default
+            string patId = string.IsNullOrWhiteSpace(patientId) ? "DICOMizer" : patientId;
+            string accNum = string.IsNullOrWhiteSpace(accessionNumber) ? "" : accessionNumber;
+
+            // Generate unique Study ID for PACS
+            string studyId = DateTime.Now.ToString("yyyyMMddHHmmss");
+
+            // Build dataset (set all descriptive pixel attrs here, not on DicomPixelData)
+            var ds = new DicomDataset
             {
                 { DicomTag.SOPClassUID, sopClassUid },
                 { DicomTag.SOPInstanceUID, DicomUID.Generate() },
                 { DicomTag.StudyInstanceUID, DicomUID.Generate() },
                 { DicomTag.SeriesInstanceUID, DicomUID.Generate() },
 
-                { DicomTag.PatientName, "DICOMIZER^TEST" },
-                { DicomTag.PatientID, "DICOMizer" },
+                // Patient Module - REQUIRED for PACS
+                { DicomTag.PatientName, patId },
+                { DicomTag.PatientID, patId },
+                { DicomTag.PatientBirthDate, "" },
+                { DicomTag.PatientSex, "" },
 
-                { DicomTag.InstanceCreationDate, now.ToString("yyyyMMdd") },
-                { DicomTag.InstanceCreationTime, now.ToString("HHmmss") },
+                // General Study Module - REQUIRED for PACS
+                { DicomTag.StudyID, studyId },
                 { DicomTag.StudyDate, now.ToString("yyyyMMdd") },
                 { DicomTag.StudyTime, now.ToString("HHmmss") },
+                { DicomTag.ReferringPhysicianName, "" },
+                { DicomTag.AccessionNumber, accNum },
+                { DicomTag.StudyDescription, "Endoscopy Video" },
+
+                // General Series Module - REQUIRED
+                { DicomTag.Modality, MODALITY },
+                { DicomTag.SeriesNumber, "1" },
                 { DicomTag.SeriesDate, now.ToString("yyyyMMdd") },
                 { DicomTag.SeriesTime, now.ToString("HHmmss") },
+                { DicomTag.SeriesDescription, USE_BD_COMPAT ? "H.264 BD-Compatible HP@L4.1" : "H.264 HP@L4.1" },
+
+                // General Equipment Module
+                { DicomTag.Manufacturer, "DICOMizer" },
+
+                // General Image Module
+                { DicomTag.InstanceNumber, "1" },
+                { DicomTag.InstanceCreationDate, now.ToString("yyyyMMdd") },
+                { DicomTag.InstanceCreationTime, now.ToString("HHmmss") },
                 { DicomTag.ContentDate, now.ToString("yyyyMMdd") },
                 { DicomTag.ContentTime, now.ToString("HHmmss") },
-                { DicomTag.SpecificCharacterSet, "ISO_IR 100" },
-
-                { DicomTag.Modality, MODALITY },
-                { DicomTag.SeriesNumber, 1 },
-                { DicomTag.InstanceNumber, 1 },
-
-                { DicomTag.StudyDescription, MODALITY == "XC" ? "Photographic Video" : "Endoscopy Video" },
-                { DicomTag.SeriesDescription, USE_BD_COMPAT ? "H.264 BD-Compatible HP@L4.1" : "H.264 HP@L4.1" },
                 { DicomTag.ImageType, new[] { "ORIGINAL", "PRIMARY" } },
 
-                // Required image attributes for Video IODs
+                { DicomTag.SpecificCharacterSet, "ISO_IR 100" },
+
+                // Required image attributes for Video IODs (compressed)
                 { DicomTag.Rows, (ushort)height },
                 { DicomTag.Columns, (ushort)width },
                 { DicomTag.SamplesPerPixel, (ushort)3 },
@@ -299,61 +340,43 @@ namespace DICOMizer
                 { DicomTag.HighBit, (ushort)7 },
                 { DicomTag.PixelRepresentation, (ushort)0 },
 
-                // Pixel aspect & timing (match our stream)
-                { DicomTag.PixelAspectRatio, "1\\1" },                        // (0028,0034) square pixels
-                { DicomTag.VideoImageFormatAcquired, "NTSC" },               // (0018,1022)
-                { DicomTag.CineRate, cineRate },                             // (0018,0040)
-                { DicomTag.FrameTime, 1000.0 / fps },                        // (0018,1063) ms
-                { DicomTag.RecommendedDisplayFrameRateInFloat, (float)fps }, // (0008,2145)
-
-                // Helpful pointer
+                // Pixel aspect & timing
+                { DicomTag.PixelAspectRatio, "1\\1" },
+                { DicomTag.CineRate, cineRate.ToString(CultureInfo.InvariantCulture) },  // (0018,0040) IS type = string
+                { DicomTag.FrameTime, 1000.0 / fps },                                     // (0018,1063) DS type = decimal string
+                { DicomTag.RecommendedDisplayFrameRate, Math.Round(fps).ToString(CultureInfo.InvariantCulture) }, // (0008,2144) IS type = string
+                { DicomTag.RecommendedDisplayFrameRateInFloat, (float)fps },              // (0008,2145) FL type = float
                 { DicomTag.FrameIncrementPointer, new DicomTag[] { DicomTag.FrameTime } },
 
-                // Viewer-friendly flags
+                // Viewer-friendly hints
                 { DicomTag.BurnedInAnnotation, "NO" },
                 { DicomTag.LossyImageCompression, "01" },
                 { DicomTag.LossyImageCompressionMethod, "ISO_14496_10" }
             };
 
-            // Compressed data rules — ensure these are absent/handled
+            // No PlanarConfiguration for compressed syntax
             ds.Remove(DicomTag.PlanarConfiguration);
 
-            if (ADD_NUMBER_OF_FRAMES)
-            {
-                // Some viewers insist on this even for encapsulated video streams
-                ds.AddOrUpdate(DicomTag.NumberOfFrames, estimatedFrames.ToString(CultureInfo.InvariantCulture));
-            }
-            else
-            {
-                ds.Remove(DicomTag.NumberOfFrames);
-            }
+            // Only add NumberOfFrames if exact (avoid mismatch)
+            ds.Remove(DicomTag.NumberOfFrames);
+            if (ADD_NUMBER_OF_FRAMES && exactFrames > 0)
+                ds.AddOrUpdate(DicomTag.NumberOfFrames, exactFrames.ToString(CultureInfo.InvariantCulture));
 
-            // === Multi-fragment Pixel Data using DicomOtherByteFragment ===
-            var frag = new DicomOtherByteFragment(DicomTag.PixelData);
+            // === Encapsulated Pixel Data via DicomPixelData (compressed=true) ===
+            var pixelData = DicomPixelData.Create(ds, true); // compressed
+            byte[] bitstream = File.ReadAllBytes(rawPath);
 
-            // Do NOT add your own empty BOT; fo-dicom writes a single empty BOT automatically.
-            using (var fs = new FileStream(rawPath, FileMode.Open, FileAccess.Read))
+            // Ensure even length to avoid DICOM warnings
+            if (bitstream.Length % 2 != 0)
             {
-                var buffer = new byte[FRAGMENT_BYTES];
-                int read;
-                while ((read = fs.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    if (read == buffer.Length)
-                    {
-                        frag.Fragments.Add(new MemoryByteBuffer(buffer));
-                        buffer = new byte[FRAGMENT_BYTES]; // new buffer for next read
-                    }
-                    else
-                    {
-                        var last = new byte[read];
-                        Buffer.BlockCopy(buffer, 0, last, 0, read);
-                        frag.Fragments.Add(new MemoryByteBuffer(last));
-                    }
-                }
+                byte[] padded = new byte[bitstream.Length + 1];
+                Array.Copy(bitstream, padded, bitstream.Length);
+                padded[bitstream.Length] = 0; // pad with null byte
+                bitstream = padded;
             }
 
-            // Attach Pixel Data
-            ds.Add(frag);
+            // Single fragment = safest for web viewers (don't split NALs)
+            pixelData.AddFrame(new MemoryByteBuffer(bitstream));
 
             // File Meta — must match dataset TS
             var file = new DicomFile(ds);
@@ -363,8 +386,8 @@ namespace DICOMizer
             file.FileMetaInfo.ImplementationClassUID = DicomImplementation.ClassUID;
             file.FileMetaInfo.ImplementationVersionName = DicomImplementation.Version;
 
-            var outName = IOPath.GetFileNameWithoutExtension(rawPath) + ".dcm";
-            var outPath = IOPath.Combine(outFolder, outName);
+            var outName = Path.GetFileNameWithoutExtension(rawPath) + ".dcm";
+            var outPath = Path.Combine(outFolder, outName);
             file.Save(outPath);
             return outPath;
         }

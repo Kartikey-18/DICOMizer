@@ -11,45 +11,55 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- Choose File -->
-        <Button Grid.Row="0" Grid.Column="0" Content="Choose File" 
-            Margin="5" Padding="10" Click="ChooseFile_Click"/>
+        <!-- Patient ID -->
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Patient ID:"
+                   Margin="5" VerticalAlignment="Center" FontSize="14"/>
+        <TextBox Grid.Row="0" Grid.Column="1" Name="patientIdTextBox"
+                 Margin="5" Padding="5" FontSize="14" Text="DICOMizer"/>
 
-        <!-- Convert -->
-        <Button Grid.Row="0" Grid.Column="1" Content="Convert" 
-            Margin="5" Padding="10" Click="Convert_Click"/>
+        <!-- Accession Number -->
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Accession #:"
+                   Margin="5" VerticalAlignment="Center" FontSize="14"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Name="accessionNumberTextBox"
+                 Margin="5" Padding="5" FontSize="14"/>
 
-        <Button Grid.Row="0" Grid.Column="1" Content="Convert"
-        Margin="5" Padding="10" Click="Convert_Click"/>
+        <!-- Choose File Button -->
+        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                Content="Choose File" Margin="5" Padding="10"
+                Click="ChooseFile_Click"/>
 
-        <Button Grid.Row="0" Grid.Column="1" Content="Open Output"
-        Margin="5" Padding="10" HorizontalAlignment="Right"
-        Click="OpenOutput_Click"/>
-
-        <Button Grid.Row="0" Grid.Column="1" Content="Dump DICOM"
-        Margin="5" Padding="10" HorizontalAlignment="Right"
-        Click="Dump_Click"/>
-
-        
-        <!-- Cancel -->
-        <Button Grid.Row="1" Grid.Column="0" Content="Cancel" 
-            Margin="5" Padding="10" Click="Cancel_Click"/>
+        <!-- Action Buttons -->
+        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+                    Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Content="Convert" Margin="5" Padding="10,5"
+                    MinWidth="100" Click="Convert_Click"/>
+            <Button Content="Cancel" Margin="5" Padding="10,5"
+                    MinWidth="100" Click="Cancel_Click"/>
+            <Button Content="Open Output" Margin="5" Padding="10,5"
+                    MinWidth="100" Click="OpenOutput_Click"/>
+            <Button Content="Dump DICOM" Margin="5" Padding="10,5"
+                    MinWidth="100" Click="Dump_Click"/>
+        </StackPanel>
 
         <!-- Progress Bar -->
-        <ProgressBar Grid.Row="1" Grid.Column="1" Height="25" Margin="5" 
-                 Name="progressBar" Minimum="0" Maximum="100"/>
+        <ProgressBar Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
+                     Height="25" Margin="5" Name="progressBar"
+                     Minimum="0" Maximum="100"/>
 
         <!-- Status Label -->
-        <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
-               Name="statusText" Margin="5" FontSize="14" 
-               Text="Ready."/>
+        <TextBlock Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
+                   Name="statusText" Margin="5" FontSize="14"
+                   TextWrapping="Wrap" Text="Ready."/>
     </Grid>
 
 </Window>
