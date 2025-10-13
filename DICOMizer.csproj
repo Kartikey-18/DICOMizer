@@ -1,0 +1,402 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="cda2dcm.exe" />
+    <None Remove="cmr.dll" />
+    <None Remove="dcm2cda.exe" />
+    <None Remove="dcm2img.exe" />
+    <None Remove="dcm2json.exe" />
+    <None Remove="dcm2pdf.exe" />
+    <None Remove="dcm2pnm.exe" />
+    <None Remove="dcm2xml.exe" />
+    <None Remove="dcmcjpeg.exe" />
+    <None Remove="dcmcjpls.exe" />
+    <None Remove="dcmconv.exe" />
+    <None Remove="dcmcrle.exe" />
+    <None Remove="dcmdata.dll" />
+    <None Remove="dcmdjpeg.exe" />
+    <None Remove="dcmdjpls.exe" />
+    <None Remove="dcmdrle.exe" />
+    <None Remove="dcmdsig.dll" />
+    <None Remove="dcmdspfn.exe" />
+    <None Remove="dcmdump.exe" />
+    <None Remove="dcmect.dll" />
+    <None Remove="dcmfg.dll" />
+    <None Remove="dcmftest.exe" />
+    <None Remove="dcmgpdir.exe" />
+    <None Remove="dcmicmp.exe" />
+    <None Remove="dcmimage.dll" />
+    <None Remove="dcmimgle.dll" />
+    <None Remove="dcmiod.dll" />
+    <None Remove="dcmj2pnm.exe" />
+    <None Remove="dcmjpeg.dll" />
+    <None Remove="dcmjpls.dll" />
+    <None Remove="dcml2pnm.exe" />
+    <None Remove="dcmmkcrv.exe" />
+    <None Remove="dcmmkdir.exe" />
+    <None Remove="dcmmklut.exe" />
+    <None Remove="dcmnet.dll" />
+    <None Remove="dcmodify.exe" />
+    <None Remove="dcmp2pgm.exe" />
+    <None Remove="dcmpmap.dll" />
+    <None Remove="dcmprscp.exe" />
+    <None Remove="dcmprscu.exe" />
+    <None Remove="dcmpschk.exe" />
+    <None Remove="dcmpsmk.exe" />
+    <None Remove="dcmpsprt.exe" />
+    <None Remove="dcmpsrcv.exe" />
+    <None Remove="dcmpssnd.exe" />
+    <None Remove="dcmpstat.dll" />
+    <None Remove="dcmqrdb.dll" />
+    <None Remove="dcmqridx.exe" />
+    <None Remove="dcmqrscp.exe" />
+    <None Remove="dcmqrti.exe" />
+    <None Remove="dcmquant.exe" />
+    <None Remove="dcmrecv.exe" />
+    <None Remove="dcmrt.dll" />
+    <None Remove="dcmscale.exe" />
+    <None Remove="dcmseg.dll" />
+    <None Remove="dcmsend.exe" />
+    <None Remove="dcmsign.exe" />
+    <None Remove="dcmsr.dll" />
+    <None Remove="dcmtkcharls.dll" />
+    <None Remove="dcmtls.dll" />
+    <None Remove="dcmtract.dll" />
+    <None Remove="dcmwlm.dll" />
+    <None Remove="dcmxml.dll" />
+    <None Remove="dcod2lum.exe" />
+    <None Remove="dconvlum.exe" />
+    <None Remove="drtdump.exe" />
+    <None Remove="dsr2html.exe" />
+    <None Remove="dsr2xml.exe" />
+    <None Remove="dsrdump.exe" />
+    <None Remove="dump2dcm.exe" />
+    <None Remove="echoscu.exe" />
+    <None Remove="ffmpeg.exe" />
+    <None Remove="ffplay.exe" />
+    <None Remove="ffprobe.exe" />
+    <None Remove="findscu.exe" />
+    <None Remove="getscu.exe" />
+    <None Remove="i2d.dll" />
+    <None Remove="ijg12.dll" />
+    <None Remove="ijg16.dll" />
+    <None Remove="ijg8.dll" />
+    <None Remove="img2dcm.exe" />
+    <None Remove="mkcsmapper.exe" />
+    <None Remove="mkesdb.exe" />
+    <None Remove="movescu.exe" />
+    <None Remove="oficonv.dll" />
+    <None Remove="oflog.dll" />
+    <None Remove="ofstd.dll" />
+    <None Remove="pdf2dcm.exe" />
+    <None Remove="stl2dcm.exe" />
+    <None Remove="storescp.exe" />
+    <None Remove="storescu.exe" />
+    <None Remove="termscu.exe" />
+    <None Remove="wlmscpfs.exe" />
+    <None Remove="xml2dcm.exe" />
+    <None Remove="xml2dsr.exe" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="cda2dcm.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="cmr.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcm2cda.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcm2img.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcm2json.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcm2pdf.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcm2pnm.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcm2xml.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmcjpeg.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmcjpls.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmconv.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmcrle.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmdata.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmdjpeg.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmdjpls.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmdrle.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmdsig.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmdspfn.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmdump.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmect.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmfg.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmftest.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmgpdir.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmicmp.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmimage.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmimgle.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmiod.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmj2pnm.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmjpeg.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmjpls.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcml2pnm.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmmkcrv.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmmkdir.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmmklut.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmnet.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmodify.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmp2pgm.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmpmap.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmprscp.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmprscu.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmpschk.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmpsmk.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmpsprt.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmpsrcv.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmpssnd.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmpstat.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmqrdb.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmqridx.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmqrscp.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmqrti.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmquant.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmrecv.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmrt.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmscale.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmseg.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmsend.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmsign.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmsr.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmtkcharls.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmtls.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmtract.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmwlm.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcmxml.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dcod2lum.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dconvlum.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="drtdump.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dsr2html.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dsr2xml.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dsrdump.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dump2dcm.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="echoscu.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ffmpeg.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ffplay.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ffprobe.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="findscu.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="getscu.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="i2d.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ijg12.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ijg16.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ijg8.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img2dcm.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="mkcsmapper.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="mkesdb.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="movescu.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="oficonv.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="oflog.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ofstd.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="pdf2dcm.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="stl2dcm.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="storescp.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="storescu.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="termscu.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="wlmscpfs.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="xml2dcm.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="xml2dsr.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="fo-dicom" Version="5.2.2" />
+    <PackageReference Include="fo-dicom.Codecs" Version="5.16.4" />
+  </ItemGroup>
+
+</Project>

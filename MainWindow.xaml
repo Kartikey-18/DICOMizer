@@ -1,0 +1,55 @@
+﻿<Window x:Class="DICOMizer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DICOMizer"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Choose File -->
+        <Button Grid.Row="0" Grid.Column="0" Content="Choose File" 
+            Margin="5" Padding="10" Click="ChooseFile_Click"/>
+
+        <!-- Convert -->
+        <Button Grid.Row="0" Grid.Column="1" Content="Convert" 
+            Margin="5" Padding="10" Click="Convert_Click"/>
+
+        <Button Grid.Row="0" Grid.Column="1" Content="Convert"
+        Margin="5" Padding="10" Click="Convert_Click"/>
+
+        <Button Grid.Row="0" Grid.Column="1" Content="Open Output"
+        Margin="5" Padding="10" HorizontalAlignment="Right"
+        Click="OpenOutput_Click"/>
+
+        <Button Grid.Row="0" Grid.Column="1" Content="Dump DICOM"
+        Margin="5" Padding="10" HorizontalAlignment="Right"
+        Click="Dump_Click"/>
+
+        
+        <!-- Cancel -->
+        <Button Grid.Row="1" Grid.Column="0" Content="Cancel" 
+            Margin="5" Padding="10" Click="Cancel_Click"/>
+
+        <!-- Progress Bar -->
+        <ProgressBar Grid.Row="1" Grid.Column="1" Height="25" Margin="5" 
+                 Name="progressBar" Minimum="0" Maximum="100"/>
+
+        <!-- Status Label -->
+        <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
+               Name="statusText" Margin="5" FontSize="14" 
+               Text="Ready."/>
+    </Grid>
+
+</Window>
