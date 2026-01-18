@@ -13,8 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="fo-dicom" Version="5.2.2" />
-    <PackageReference Include="fo-dicom.Codecs" Version="5.1.6.4" />
-    <PackageReference Include="fo-dicom.Network" Version="5.2.2" />
+    <PackageReference Include="fo-dicom.Codecs" Version="5.2.2" />
   </ItemGroup>
 
   <ItemGroup>
