@@ -6,7 +6,6 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
     <AssemblyName>DICOMizer</AssemblyName>
     <RootNamespace>DICOMizer</RootNamespace>
   </PropertyGroup>
