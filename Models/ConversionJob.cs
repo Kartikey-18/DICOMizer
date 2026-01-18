@@ -1,3 +1,5 @@
+using System.IO;
+
 namespace DICOMizer.Models;
 
 /// <summary>

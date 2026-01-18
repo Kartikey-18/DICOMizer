@@ -1,6 +1,8 @@
+using System.IO;
 using DICOMizer.Models;
 using DICOMizer.Utilities;
 using FellowOakDicom;
+using FellowOakDicom.Imaging;
 using FellowOakDicom.IO.Buffer;
 
 namespace DICOMizer.Services;
@@ -144,19 +146,24 @@ public class DicomConversionService
         var dataset = dicomFile.Dataset;
 
         // Set transfer syntax to MPEG-4 AVC/H.264
-        dicomFile.FileMetaInfo.TransferSyntax = DicomTransferSyntax.Lookup(Constants.Mpeg4TransferSyntaxUid);
+        dicomFile.FileMetaInfo.TransferSyntax = DicomTransferSyntax.Lookup(DicomUID.Parse(Constants.Mpeg4TransferSyntaxUid));
 
         // Fragment the video data into 256KB chunks
         var fragments = FragmentVideoData(videoData);
 
-        // Create encapsulated pixel data
-        var pixelData = DicomPixelData.Create(dataset, true);
+        // Create encapsulated pixel data sequence
+        var pixelDataSequence = new DicomOtherByteFragment(DicomTag.PixelData);
+
+        // Add offset table (empty for video)
+        pixelDataSequence.Fragments.Add(new MemoryByteBuffer(Array.Empty<byte>()));
 
         // Add fragments
         foreach (var fragment in fragments)
         {
-            pixelData.AddFrame(new MemoryByteBuffer(fragment));
+            pixelDataSequence.Fragments.Add(new MemoryByteBuffer(fragment));
         }
+
+        dataset.AddOrUpdate(pixelDataSequence);
     }
 
     /// <summary>
