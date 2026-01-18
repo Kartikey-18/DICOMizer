@@ -1,3 +1,4 @@
+using System.IO;
 using DICOMizer.Models;
 using DICOMizer.Utilities;
 
