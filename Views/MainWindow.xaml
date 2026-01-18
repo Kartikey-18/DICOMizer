@@ -46,11 +46,11 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="SpaceBetween">
-            <TextBlock Text="DICOMizer" FontSize="24" FontWeight="Bold" Foreground="#007ACC"/>
-            <Button Name="SettingsButton" Content="⚙ Settings" Style="{StaticResource SecondaryButton}"
-                    Click="SettingsButton_Click"/>
-        </StackPanel>
+        <Grid Grid.Row="0">
+            <TextBlock Text="DICOMizer" FontSize="24" FontWeight="Bold" Foreground="#007ACC" HorizontalAlignment="Left"/>
+            <Button Name="SettingsButton" Content="Settings" HorizontalAlignment="Right"
+                    Click="SettingsButton_Click" Padding="10,5"/>
+        </Grid>
 
         <!-- Video Selection Section -->
         <GroupBox Grid.Row="1" Header="Video File" Margin="0,15,0,0" Padding="15">
