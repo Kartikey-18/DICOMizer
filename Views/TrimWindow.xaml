@@ -1,0 +1,157 @@
+<Window x:Class="DICOMizer.Views.TrimWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Trim Video - DICOMizer"
+        Height="650" Width="800"
+        WindowStartupLocation="CenterOwner"
+        Background="#F5F5F5"
+        ResizeMode="NoResize">
+
+    <Window.Resources>
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Background" Value="#007ACC"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="20,8"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style x:Key="SecondaryButton" TargetType="Button">
+            <Setter Property="Background" Value="#E0E0E0"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <TextBlock Grid.Row="0" Text="Trim Video" FontSize="20" FontWeight="Bold" Margin="0,0,0,10"/>
+        <TextBlock Grid.Row="1" Name="VideoInfoTextBlock" Text="" Foreground="#666666" Margin="0,0,0,15"/>
+
+        <!-- Video Preview -->
+        <GroupBox Grid.Row="2" Header="Video Preview" Padding="15">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Video Player -->
+                <MediaElement Name="VideoPlayer" Grid.Row="0"
+                              LoadedBehavior="Manual" UnloadedBehavior="Stop"
+                              Stretch="Uniform" Background="Black"
+                              MediaOpened="VideoPlayer_MediaOpened"/>
+
+                <!-- Playback Controls -->
+                <Grid Grid.Row="1" Margin="0,10,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Name="PlayButton" Grid.Column="0" Content="▶ Play" Width="80"
+                            Margin="0,0,10,0" Click="PlayButton_Click"/>
+                    <Button Name="PauseButton" Grid.Column="1" Content="⏸ Pause" Width="80"
+                            Margin="0,0,10,0" Click="PauseButton_Click"/>
+
+                    <Slider Name="TimelineSlider" Grid.Column="2"
+                            Minimum="0" Maximum="100" Value="0"
+                            VerticalAlignment="Center"
+                            ValueChanged="TimelineSlider_ValueChanged"
+                            Margin="0,0,10,0"/>
+
+                    <TextBlock Name="TimeDisplayTextBlock" Grid.Column="3"
+                               Text="00:00:00 / 00:00:00" VerticalAlignment="Center"
+                               MinWidth="150" TextAlignment="Right"/>
+                </Grid>
+            </Grid>
+        </GroupBox>
+
+        <!-- Trim Controls -->
+        <GroupBox Grid.Row="3" Header="Trim Settings" Padding="15" Margin="0,15,0,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Start Time -->
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Start Time (hh:mm:ss)" VerticalAlignment="Center" Margin="0,5"/>
+                <TextBox Name="StartTimeTextBox" Grid.Row="0" Grid.Column="1"
+                         Text="00:00:00" Margin="10,5" Padding="5"/>
+                <Button Name="SetStartButton" Grid.Row="0" Grid.Column="2"
+                        Content="Set Start to Current" Width="140" Margin="10,5"
+                        Click="SetStartButton_Click"/>
+                <Button Name="JumpToStartButton" Grid.Row="0" Grid.Column="3"
+                        Content="Jump to Start" Width="120" Margin="10,5"
+                        Click="JumpToStartButton_Click"/>
+
+                <!-- End Time -->
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="End Time (hh:mm:ss)" VerticalAlignment="Center" Margin="0,5"/>
+                <TextBox Name="EndTimeTextBox" Grid.Row="1" Grid.Column="1"
+                         Text="00:00:00" Margin="10,5" Padding="5"/>
+                <Button Name="SetEndButton" Grid.Row="1" Grid.Column="2"
+                        Content="Set End to Current" Width="140" Margin="10,5"
+                        Click="SetEndButton_Click"/>
+                <Button Name="JumpToEndButton" Grid.Row="1" Grid.Column="3"
+                        Content="Jump to End" Width="120" Margin="10,5"
+                        Click="JumpToEndButton_Click"/>
+
+                <!-- Duration Info -->
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Trimmed Duration" VerticalAlignment="Center" Margin="0,5"/>
+                <TextBlock Name="TrimmedDurationTextBlock" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3"
+                           Text="--:--:--" FontWeight="Bold" VerticalAlignment="Center" Margin="10,5"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- Frame Navigation -->
+        <Grid Grid.Row="4" Margin="0,10,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Name="PrevFrameButton" Content="◀ Previous Frame" Width="130"
+                        Margin="5" Click="PrevFrameButton_Click"/>
+                <Button Name="NextFrameButton" Content="Next Frame ▶" Width="130"
+                        Margin="5" Click="NextFrameButton_Click"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Action Buttons -->
+        <Grid Grid.Row="5" Margin="0,20,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Name="CancelButton" Grid.Column="1" Content="Cancel" Width="100"
+                    Margin="0,0,10,0" Click="CancelButton_Click"/>
+
+            <Button Name="ApplyButton" Grid.Column="2" Content="Apply Trim" Width="120"
+                    Style="{StaticResource PrimaryButton}" Click="ApplyButton_Click"/>
+        </Grid>
+    </Grid>
+</Window>
