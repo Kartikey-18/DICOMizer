@@ -53,10 +53,12 @@
                 </Grid.RowDefinitions>
 
                 <!-- Video Player -->
-                <MediaElement Name="VideoPlayer" Grid.Row="0"
-                              LoadedBehavior="Manual" UnloadedBehavior="Stop"
-                              Stretch="Uniform" Background="Black"
-                              MediaOpened="VideoPlayer_MediaOpened"/>
+                <Border Grid.Row="0" Background="Black">
+                    <MediaElement Name="VideoPlayer"
+                                  LoadedBehavior="Manual" UnloadedBehavior="Stop"
+                                  Stretch="Uniform"
+                                  MediaOpened="VideoPlayer_MediaOpened"/>
+                </Border>
 
                 <!-- Playback Controls -->
                 <Grid Grid.Row="1" Margin="0,10,0,0">

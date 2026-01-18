@@ -78,9 +78,9 @@
                 <TextBlock Name="VideoInfoTextBlock" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
                            Margin="0,10,0,0" Foreground="#666666"/>
 
-                <MediaElement Name="VideoPreview" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
-                              Height="250" Margin="0,10,0,0" LoadedBehavior="Manual"
-                              Stretch="Uniform" Background="Black"/>
+                <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Background="Black" Height="250" Margin="0,10,0,0">
+                    <MediaElement Name="VideoPreview" LoadedBehavior="Manual" Stretch="Uniform"/>
+                </Border>
             </Grid>
         </GroupBox>
 
