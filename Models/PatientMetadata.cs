@@ -30,6 +30,9 @@ public class PatientMetadata
     [StringLength(64, ErrorMessage = "Physician Name must be 64 characters or less")]
     public string? PerformingPhysicianName { get; set; }
 
+    [StringLength(16, ErrorMessage = "Accession Number must be 16 characters or less")]
+    public string? AccessionNumber { get; set; }
+
     public DateTime StudyDate { get; set; } = DateTime.Now;
     public DateTime SeriesDate { get; set; } = DateTime.Now;
     public DateTime ContentDate { get; set; } = DateTime.Now;
