@@ -196,22 +196,23 @@ public class VideoProcessingService
     }
 
     /// <summary>
-    /// Builds FFmpeg arguments to extract raw H.264 Annex-B stream
-    /// If input is already H.264, use stream copy to preserve quality
-    /// Otherwise re-encode with available encoder
+    /// Builds FFmpeg transcode arguments per design document
     /// </summary>
     private string BuildTranscodeArguments(string inputPath, string outputPath, int width, int height)
     {
-        // Extract raw H.264 bitstream using copy (no re-encoding)
-        // The input video is already H.264, so we just need to extract the raw stream
-        // -bsf:v h264_mp4toannexb converts from MP4 format to Annex-B format
+        // Exact command from design document:
+        // ffmpeg -i input.mp4 -c:v libx264 -profile:v high -level 4.1 -r 30 -pix_fmt yuv420p -g 60 -an -f h264 output.h264
         var args = new List<string>
         {
             "-i", $"\"{inputPath}\"",
-            "-c:v", "copy",
-            "-bsf:v", "h264_mp4toannexb",  // Convert to Annex-B format
-            "-an",       // Remove audio
-            "-f", "h264", // Output raw H.264 format
+            "-c:v", "libx264",
+            "-profile:v", "high",
+            "-level", "4.1",
+            "-r", "30",
+            "-pix_fmt", "yuv420p",
+            "-g", "60",
+            "-an",
+            "-f", "h264",
             "-y",
             $"\"{outputPath}\""
         };
