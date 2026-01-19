@@ -172,7 +172,7 @@ public class VideoProcessingService
         IProgress<int>? progress = null,
         CancellationToken cancellationToken = default)
     {
-        var outputPath = PathHelper.GetTempFilePath(".h264");
+        var outputPath = PathHelper.GetTempFilePath(".mp4");
 
         // Calculate output dimensions (maintain aspect ratio, max 1920x1080)
         var (width, height) = CalculateOutputDimensions(metadata.Width, metadata.Height);
@@ -196,12 +196,13 @@ public class VideoProcessingService
     }
 
     /// <summary>
-    /// Builds FFmpeg transcode arguments per design document
+    /// Builds FFmpeg transcode arguments for eUnity-compatible H.264
+    /// Uses MP4 container for browser compatibility while maintaining DICOM-required encoding
     /// </summary>
     private string BuildTranscodeArguments(string inputPath, string outputPath, int width, int height)
     {
-        // Exact command from design document:
-        // ffmpeg -i input.mp4 -c:v libx264 -profile:v high -level 4.1 -r 30 -pix_fmt yuv420p -g 60 -an -f h264 output.h264
+        // H.264 High@L4.1 encoding with MP4 container for browser/eUnity compatibility
+        // Parameters per design document, but using MP4 container instead of raw Annex-B
         var args = new List<string>
         {
             "-i", $"\"{inputPath}\"",
@@ -212,7 +213,7 @@ public class VideoProcessingService
             "-pix_fmt", "yuv420p",
             "-g", "60",
             "-an",
-            "-f", "h264",
+            "-movflags", "+faststart",  // Optimize for streaming/web playback
             "-y",
             $"\"{outputPath}\""
         };
