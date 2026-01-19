@@ -172,7 +172,7 @@ public class VideoProcessingService
         IProgress<int>? progress = null,
         CancellationToken cancellationToken = default)
     {
-        var outputPath = PathHelper.GetTempFilePath(".mp4");
+        var outputPath = PathHelper.GetTempFilePath(".h264");
 
         // Calculate output dimensions (maintain aspect ratio, max 1920x1080)
         var (width, height) = CalculateOutputDimensions(metadata.Width, metadata.Height);
@@ -196,18 +196,24 @@ public class VideoProcessingService
     }
 
     /// <summary>
-    /// Builds FFmpeg transcode arguments with H.264 settings
-    /// Uses stream copy if input is already H.264 at correct resolution, otherwise re-encodes
+    /// Builds FFmpeg transcode arguments to output raw H.264 Annex-B format
+    /// Required for DICOM video encapsulation per design document
     /// </summary>
     private string BuildTranscodeArguments(string inputPath, string outputPath, int width, int height)
     {
-        // Use stream copy (-c:v copy) to preserve original H.264 encoding
-        // This avoids re-encoding and maintains quality/compatibility
+        // Transcode to raw H.264 Annex-B format as required by DICOM
+        // Settings from design document: High@L4.1, 30fps, yuv420p, closed GOP
         var args = new List<string>
         {
             "-i", $"\"{inputPath}\"",
-            "-c:v", "copy",
-            "-movflags", "+faststart",
+            "-c:v", "libx264",
+            "-profile:v", "high",
+            "-level:v", "4.1",
+            "-r", "30",
+            "-pix_fmt", "yuv420p",
+            "-g", "60",  // GOP size: keyframe every 2 seconds at 30fps
+            "-an",       // Remove audio
+            "-f", "h264", // Output raw H.264 Annex-B format
             "-y",
             $"\"{outputPath}\""
         };

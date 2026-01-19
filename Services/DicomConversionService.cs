@@ -140,6 +140,7 @@ public class DicomConversionService
 
     /// <summary>
     /// Adds H.264 video data to DICOM file as encapsulated pixel data
+    /// Uses 256KB fragmentation as per DICOM standard and design document
     /// </summary>
     private void AddVideoPixelData(DicomFile dicomFile, byte[] videoData)
     {
@@ -148,17 +149,20 @@ public class DicomConversionService
         // Set transfer syntax to MPEG-4 AVC/H.264 High Profile
         dicomFile.FileMetaInfo.TransferSyntax = DicomTransferSyntax.Lookup(DicomUID.Parse(Constants.Mpeg4TransferSyntaxUid));
 
-        // Create encapsulated pixel data sequence
-        var pixelDataSequence = new DicomOtherByteFragment(DicomTag.PixelData);
+        // Create pixel data using fo-dicom's DicomPixelData
+        // This is the correct approach per the design document
+        var pixelData = DicomPixelData.Create(dataset, true);
 
-        // Add empty offset table (required for encapsulated pixel data)
-        pixelDataSequence.Fragments.Add(new MemoryByteBuffer(Array.Empty<byte>()));
+        // Fragment video data into 256KB chunks as per design document
+        const int FRAGMENT_SIZE = 262144; // 256 KB
 
-        // Add the entire video as a single fragment (do not split)
-        // DICOM video should have the complete MP4/H.264 stream in one fragment
-        pixelDataSequence.Fragments.Add(new MemoryByteBuffer(videoData));
-
-        dataset.AddOrUpdate(pixelDataSequence);
+        for (int i = 0; i < videoData.Length; i += FRAGMENT_SIZE)
+        {
+            int fragmentSize = Math.Min(FRAGMENT_SIZE, videoData.Length - i);
+            byte[] fragment = new byte[fragmentSize];
+            Array.Copy(videoData, i, fragment, 0, fragmentSize);
+            pixelData.AddFrame(new MemoryByteBuffer(fragment));
+        }
     }
 
     /// <summary>

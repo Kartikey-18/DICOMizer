@@ -24,7 +24,7 @@ public static class Constants
     public const string ExplicitVRLittleEndianUid = "1.2.840.10008.1.2.1";
 
     // Video Processing Settings
-    public const int DefaultFrameRate = 25;
+    public const int DefaultFrameRate = 30; // 30fps for eUnity compatibility per design doc
     public const string DefaultVideoCodec = "libx264";
     // Fallback encoders to try if libx264 is not available
     public static readonly string[] FallbackVideoEncoders = { "h264_nvenc", "h264_qsv", "h264_amf", "h264_mf" };
