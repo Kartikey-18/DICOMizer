@@ -172,7 +172,7 @@ public class VideoProcessingService
         IProgress<int>? progress = null,
         CancellationToken cancellationToken = default)
     {
-        var outputPath = PathHelper.GetTempFilePath(".264");
+        var outputPath = PathHelper.GetTempFilePath(".mp4");
 
         // Calculate output dimensions (maintain aspect ratio, max 1920x1080)
         var (width, height) = CalculateOutputDimensions(metadata.Width, metadata.Height);
@@ -196,14 +196,13 @@ public class VideoProcessingService
     }
 
     /// <summary>
-    /// Builds FFmpeg transcode arguments for DICOM-compatible H.264
-    /// Outputs raw H.264 Annex-B bitstream as required by DICOM MPEG-4 transfer syntax
+    /// Builds FFmpeg transcode arguments for eUnity-compatible H.264 in MP4 container
+    /// Based on analysis of working DICOM files - eUnity expects MP4 container format
     /// </summary>
     private string BuildTranscodeArguments(string inputPath, string outputPath, int width, int height)
     {
-        // H.264 High@L4.1 encoding per design document
-        // Output raw H.264 Annex-B format for DICOM encapsulation
-        // Use baseline features that ensure maximum compatibility
+        // H.264 High@L4.1 encoding in MP4 container (mp42 brand)
+        // This matches the format used by working eUnity-compatible DICOM files
         var args = new List<string>
         {
             "-i", $"\"{inputPath}\"",
@@ -212,11 +211,11 @@ public class VideoProcessingService
             "-level", "4.1",
             "-r", "30",
             "-pix_fmt", "yuv420p",
-            "-g", "30",              // GOP size = 1 second (30 frames at 30fps)
-            "-bf", "0",              // No B-frames for simpler decoding
-            "-an",
-            "-bsf:v", "h264_mp4toannexb",  // Ensure Annex-B format with start codes
-            "-f", "h264",
+            "-g", "30",              // GOP size = 1 second
+            "-an",                   // No audio
+            "-movflags", "+faststart",  // Move moov atom to start for streaming
+            "-brand", "mp42",        // Use mp42 brand like working files
+            "-f", "mp4",
             "-y",
             $"\"{outputPath}\""
         };

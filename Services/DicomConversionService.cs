@@ -61,14 +61,29 @@ public class DicomConversionService
 
     /// <summary>
     /// Creates a DICOM dataset with required tags
+    /// Format matches working eUnity-compatible DICOM video files
     /// </summary>
     private DicomFile CreateDicomDataset(VideoMetadata videoMetadata, PatientMetadata patientMetadata)
     {
         var dataset = new DicomDataset();
 
+        // Image Type - matches working files
+        dataset.Add(DicomTag.ImageType, "ORIGINAL", "SECONDARY");
+
         // SOP Common Module
         dataset.Add(DicomTag.SOPClassUID, Constants.VideoEndoscopicSopClassUid);
         dataset.Add(DicomTag.SOPInstanceUID, UidGenerator.GenerateSopInstanceUid());
+
+        // General Study Module
+        dataset.Add(DicomTag.StudyDate, PatientMetadata.FormatDicomDate(patientMetadata.StudyDate));
+        dataset.Add(DicomTag.StudyTime, PatientMetadata.FormatDicomTime(patientMetadata.StudyDate));
+        dataset.Add(DicomTag.AccessionNumber, patientMetadata.AccessionNumber ?? "");
+        dataset.Add(DicomTag.Modality, "ES"); // Endoscopy
+        dataset.Add(DicomTag.ConversionType, "DV"); // Digitized Video
+        dataset.Add(DicomTag.Manufacturer, Constants.Manufacturer);
+        dataset.Add(DicomTag.ReferringPhysicianName, "");
+        dataset.Add(DicomTag.StudyDescription, patientMetadata.StudyDescription ?? "");
+        dataset.Add(DicomTag.SeriesDescription, patientMetadata.SeriesDescription ?? "");
 
         // Patient Module
         dataset.Add(DicomTag.PatientName, patientMetadata.PatientName);
@@ -80,56 +95,41 @@ public class DicomConversionService
             if (!string.IsNullOrEmpty(birthDate))
                 dataset.Add(DicomTag.PatientBirthDate, birthDate);
         }
+        else
+        {
+            dataset.Add(DicomTag.PatientBirthDate, "19700101"); // Default like working files
+        }
 
-        if (!string.IsNullOrWhiteSpace(patientMetadata.PatientSex))
-            dataset.Add(DicomTag.PatientSex, patientMetadata.PatientSex);
+        dataset.Add(DicomTag.PatientSex, patientMetadata.PatientSex ?? "");
 
-        // Study Module
+        // Cine Module - set to 0 like working files (video duration encoded in MP4)
+        dataset.Add(DicomTag.CineRate, "0");
+        dataset.Add(DicomTag.FrameTime, "0");
+
+        // Study/Series Instance UIDs
         dataset.Add(DicomTag.StudyInstanceUID, UidGenerator.GenerateStudyUid());
-        dataset.Add(DicomTag.StudyDate, PatientMetadata.FormatDicomDate(patientMetadata.StudyDate));
-        dataset.Add(DicomTag.StudyTime, PatientMetadata.FormatDicomTime(patientMetadata.StudyDate));
-
-        if (!string.IsNullOrWhiteSpace(patientMetadata.StudyDescription))
-            dataset.Add(DicomTag.StudyDescription, patientMetadata.StudyDescription);
-
-        // Series Module
         dataset.Add(DicomTag.SeriesInstanceUID, UidGenerator.GenerateSeriesUid());
-        dataset.Add(DicomTag.SeriesDate, PatientMetadata.FormatDicomDate(patientMetadata.SeriesDate));
-        dataset.Add(DicomTag.SeriesTime, PatientMetadata.FormatDicomTime(patientMetadata.SeriesDate));
-        dataset.Add(DicomTag.Modality, "ES"); // Endoscopy
-
-        if (!string.IsNullOrWhiteSpace(patientMetadata.SeriesDescription))
-            dataset.Add(DicomTag.SeriesDescription, patientMetadata.SeriesDescription);
-
+        dataset.Add(DicomTag.StudyID, "");
         dataset.Add(DicomTag.SeriesNumber, 1);
-
-        // Equipment Module
-        dataset.Add(DicomTag.Manufacturer, Constants.Manufacturer);
-        dataset.Add(DicomTag.ManufacturerModelName, Constants.AppName);
-        dataset.Add(DicomTag.SoftwareVersions, Constants.AppVersion);
-
-        // Frame of Reference Module
-        dataset.Add(DicomTag.FrameOfReferenceUID, UidGenerator.GenerateFrameOfReferenceUid());
-
-        // General Image Module
         dataset.Add(DicomTag.InstanceNumber, 1);
-        dataset.Add(DicomTag.ContentDate, PatientMetadata.FormatDicomDate(patientMetadata.ContentDate));
-        dataset.Add(DicomTag.ContentTime, PatientMetadata.FormatDicomTime(patientMetadata.ContentDate));
 
-        // Image Pixel Module
-        dataset.Add(DicomTag.SamplesPerPixel, (ushort)3); // RGB
+        // Image Pixel Module - set dimensions to 0 like working files
+        dataset.Add(DicomTag.SamplesPerPixel, (ushort)3);
         dataset.Add(DicomTag.PhotometricInterpretation, "YBR_PARTIAL_420");
-        dataset.Add(DicomTag.Rows, (ushort)videoMetadata.Height);
-        dataset.Add(DicomTag.Columns, (ushort)videoMetadata.Width);
+        dataset.Add(DicomTag.PlanarConfiguration, (ushort)0);
+        dataset.Add(DicomTag.NumberOfFrames, "0"); // Video frame count is in MP4 container
+        dataset.Add(DicomTag.FrameIncrementPointer, DicomTag.FrameTime); // Points to FrameTime tag
+        dataset.Add(DicomTag.Rows, (ushort)0); // Set to 0 like working files
+        dataset.Add(DicomTag.Columns, (ushort)0); // Set to 0 like working files
         dataset.Add(DicomTag.BitsAllocated, (ushort)8);
         dataset.Add(DicomTag.BitsStored, (ushort)8);
         dataset.Add(DicomTag.HighBit, (ushort)7);
         dataset.Add(DicomTag.PixelRepresentation, (ushort)0);
+        dataset.Add(DicomTag.LossyImageCompression, "01"); // Lossy compression
 
-        // Cine Module
-        dataset.Add(DicomTag.FrameTime, (1000.0 / Constants.DefaultFrameRate).ToString("F2")); // milliseconds per frame (DS type)
-        dataset.Add(DicomTag.CineRate, Constants.DefaultFrameRate.ToString()); // IS type
-        dataset.Add(DicomTag.NumberOfFrames, CalculateNumberOfFrames(videoMetadata.EffectiveDuration).ToString()); // IS type
+        // Equipment Module
+        dataset.Add(DicomTag.ManufacturerModelName, Constants.AppName);
+        dataset.Add(DicomTag.SoftwareVersions, Constants.AppVersion);
 
         // Performing Physician
         if (!string.IsNullOrWhiteSpace(patientMetadata.PerformingPhysicianName))
