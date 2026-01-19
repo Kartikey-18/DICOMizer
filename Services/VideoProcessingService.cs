@@ -196,25 +196,22 @@ public class VideoProcessingService
     }
 
     /// <summary>
-    /// Builds FFmpeg transcode arguments to output raw H.264 Annex-B format
-    /// Required for DICOM video encapsulation per design document
-    /// Uses libopenh264 as fallback since libx264 may not be available
+    /// Builds FFmpeg arguments to extract raw H.264 Annex-B stream
+    /// If input is already H.264, use stream copy to preserve quality
+    /// Otherwise re-encode with available encoder
     /// </summary>
     private string BuildTranscodeArguments(string inputPath, string outputPath, int width, int height)
     {
-        // Transcode to raw H.264 Annex-B format as required by DICOM
-        // Using libopenh264 which is available in most FFmpeg builds
-        // Settings based on design document: 30fps, yuv420p
+        // Extract raw H.264 bitstream using copy (no re-encoding)
+        // The input video is already H.264, so we just need to extract the raw stream
+        // -bsf:v h264_mp4toannexb converts from MP4 format to Annex-B format
         var args = new List<string>
         {
             "-i", $"\"{inputPath}\"",
-            "-c:v", "libopenh264",
-            "-r", "30",
-            "-pix_fmt", "yuv420p",
-            "-g", "60",  // GOP size: keyframe every 2 seconds at 30fps
-            "-b:v", "4M", // Target bitrate for quality
+            "-c:v", "copy",
+            "-bsf:v", "h264_mp4toannexb",  // Convert to Annex-B format
             "-an",       // Remove audio
-            "-f", "h264", // Output raw H.264 Annex-B format
+            "-f", "h264", // Output raw H.264 format
             "-y",
             $"\"{outputPath}\""
         };
