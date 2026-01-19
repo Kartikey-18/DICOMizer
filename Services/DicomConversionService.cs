@@ -145,49 +145,20 @@ public class DicomConversionService
     {
         var dataset = dicomFile.Dataset;
 
-        // Set transfer syntax to MPEG-4 AVC/H.264
+        // Set transfer syntax to MPEG-4 AVC/H.264 High Profile
         dicomFile.FileMetaInfo.TransferSyntax = DicomTransferSyntax.Lookup(DicomUID.Parse(Constants.Mpeg4TransferSyntaxUid));
-
-        // Fragment the video data into 256KB chunks
-        var fragments = FragmentVideoData(videoData);
 
         // Create encapsulated pixel data sequence
         var pixelDataSequence = new DicomOtherByteFragment(DicomTag.PixelData);
 
-        // Add offset table (empty for video)
+        // Add empty offset table (required for encapsulated pixel data)
         pixelDataSequence.Fragments.Add(new MemoryByteBuffer(Array.Empty<byte>()));
 
-        // Add fragments
-        foreach (var fragment in fragments)
-        {
-            pixelDataSequence.Fragments.Add(new MemoryByteBuffer(fragment));
-        }
+        // Add the entire video as a single fragment (do not split)
+        // DICOM video should have the complete MP4/H.264 stream in one fragment
+        pixelDataSequence.Fragments.Add(new MemoryByteBuffer(videoData));
 
         dataset.AddOrUpdate(pixelDataSequence);
-    }
-
-    /// <summary>
-    /// Fragments video data into chunks for DICOM encapsulation
-    /// </summary>
-    private List<byte[]> FragmentVideoData(byte[] videoData)
-    {
-        var fragments = new List<byte[]>();
-        var offset = 0;
-        var fragmentSize = Constants.DicomFragmentSize;
-
-        while (offset < videoData.Length)
-        {
-            var remainingBytes = videoData.Length - offset;
-            var currentFragmentSize = Math.Min(fragmentSize, remainingBytes);
-
-            var fragment = new byte[currentFragmentSize];
-            Array.Copy(videoData, offset, fragment, 0, currentFragmentSize);
-
-            fragments.Add(fragment);
-            offset += currentFragmentSize;
-        }
-
-        return fragments;
     }
 
     /// <summary>
