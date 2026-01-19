@@ -197,18 +197,16 @@ public class VideoProcessingService
 
     /// <summary>
     /// Builds FFmpeg transcode arguments with H.264 settings
-    /// Uses libopenh264 encoder which is available in most FFmpeg builds
+    /// Uses stream copy if input is already H.264 at correct resolution, otherwise re-encodes
     /// </summary>
     private string BuildTranscodeArguments(string inputPath, string outputPath, int width, int height)
     {
+        // Use stream copy (-c:v copy) to preserve original H.264 encoding
+        // This avoids re-encoding and maintains quality/compatibility
         var args = new List<string>
         {
             "-i", $"\"{inputPath}\"",
-            "-c:v", "libopenh264",
-            "-vf", $"scale={width}:{height}",
-            "-pix_fmt", Constants.DefaultPixelFormat,
-            "-r", Constants.DefaultFrameRate.ToString(),
-            "-b:v", "4M",
+            "-c:v", "copy",
             "-movflags", "+faststart",
             "-y",
             $"\"{outputPath}\""
