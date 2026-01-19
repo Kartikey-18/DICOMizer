@@ -127,9 +127,9 @@ public class DicomConversionService
         dataset.Add(DicomTag.PixelRepresentation, (ushort)0);
 
         // Cine Module
-        dataset.Add(DicomTag.FrameTime, (decimal)(1000.0 / Constants.DefaultFrameRate)); // milliseconds per frame
-        dataset.Add(DicomTag.CineRate, (decimal)Constants.DefaultFrameRate);
-        dataset.Add(DicomTag.NumberOfFrames, CalculateNumberOfFrames(videoMetadata.EffectiveDuration));
+        dataset.Add(DicomTag.FrameTime, (1000.0 / Constants.DefaultFrameRate).ToString("F2")); // milliseconds per frame (DS type)
+        dataset.Add(DicomTag.CineRate, Constants.DefaultFrameRate.ToString()); // IS type
+        dataset.Add(DicomTag.NumberOfFrames, CalculateNumberOfFrames(videoMetadata.EffectiveDuration).ToString()); // IS type
 
         // Performing Physician
         if (!string.IsNullOrWhiteSpace(patientMetadata.PerformingPhysicianName))
