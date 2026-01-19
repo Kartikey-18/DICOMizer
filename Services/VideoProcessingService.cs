@@ -172,7 +172,7 @@ public class VideoProcessingService
         IProgress<int>? progress = null,
         CancellationToken cancellationToken = default)
     {
-        var outputPath = PathHelper.GetTempFilePath(".mp4");
+        var outputPath = PathHelper.GetTempFilePath(".264");
 
         // Calculate output dimensions (maintain aspect ratio, max 1920x1080)
         var (width, height) = CalculateOutputDimensions(metadata.Width, metadata.Height);
@@ -196,13 +196,14 @@ public class VideoProcessingService
     }
 
     /// <summary>
-    /// Builds FFmpeg transcode arguments for eUnity-compatible H.264
-    /// Uses MP4 container for browser compatibility while maintaining DICOM-required encoding
+    /// Builds FFmpeg transcode arguments for DICOM-compatible H.264
+    /// Outputs raw H.264 Annex-B bitstream as required by DICOM MPEG-4 transfer syntax
     /// </summary>
     private string BuildTranscodeArguments(string inputPath, string outputPath, int width, int height)
     {
-        // H.264 High@L4.1 encoding with MP4 container for browser/eUnity compatibility
-        // Parameters per design document, but using MP4 container instead of raw Annex-B
+        // H.264 High@L4.1 encoding per design document
+        // Output raw H.264 Annex-B format for DICOM encapsulation
+        // Use baseline features that ensure maximum compatibility
         var args = new List<string>
         {
             "-i", $"\"{inputPath}\"",
@@ -211,9 +212,11 @@ public class VideoProcessingService
             "-level", "4.1",
             "-r", "30",
             "-pix_fmt", "yuv420p",
-            "-g", "60",
+            "-g", "30",              // GOP size = 1 second (30 frames at 30fps)
+            "-bf", "0",              // No B-frames for simpler decoding
             "-an",
-            "-movflags", "+faststart",  // Optimize for streaming/web playback
+            "-bsf:v", "h264_mp4toannexb",  // Ensure Annex-B format with start codes
+            "-f", "h264",
             "-y",
             $"\"{outputPath}\""
         };
