@@ -197,29 +197,24 @@ public class VideoProcessingService
 
     /// <summary>
     /// Builds FFmpeg transcode arguments with H.264 settings
+    /// Uses libopenh264 encoder which is available in most FFmpeg builds
     /// </summary>
     private string BuildTranscodeArguments(string inputPath, string outputPath, int width, int height)
     {
         var args = new List<string>
         {
             "-i", $"\"{inputPath}\"",
-            "-c:v", Constants.DefaultVideoCodec,
-            "-profile:v", Constants.DefaultVideoProfile,
-            "-level:v", Constants.DefaultVideoLevel,
-            "-pix_fmt", Constants.DefaultPixelFormat,
-            "-preset", Constants.H264Preset,
-            "-crf", Constants.DefaultCrf.ToString(),
+            "-c:v", "libopenh264",
             "-vf", $"scale={width}:{height}",
+            "-pix_fmt", Constants.DefaultPixelFormat,
             "-r", Constants.DefaultFrameRate.ToString(),
+            "-b:v", "4M",
             "-movflags", "+faststart",
             "-y",
             $"\"{outputPath}\""
         };
 
-        // Try hardware acceleration if available (can fail gracefully)
-        var hwAccelArgs = "-hwaccel auto -hwaccel_output_format auto";
-
-        return $"{hwAccelArgs} {string.Join(" ", args)}";
+        return string.Join(" ", args);
     }
 
     /// <summary>

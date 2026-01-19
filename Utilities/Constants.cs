@@ -26,6 +26,8 @@ public static class Constants
     // Video Processing Settings
     public const int DefaultFrameRate = 25;
     public const string DefaultVideoCodec = "libx264";
+    // Fallback encoders to try if libx264 is not available
+    public static readonly string[] FallbackVideoEncoders = { "h264_nvenc", "h264_qsv", "h264_amf", "h264_mf" };
     public const string DefaultVideoProfile = "high";
     public const string DefaultVideoLevel = "4.1";
     public const string DefaultPixelFormat = "yuv420p";
