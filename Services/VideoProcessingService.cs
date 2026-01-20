@@ -201,8 +201,8 @@ public class VideoProcessingService
     /// </summary>
     private string BuildTranscodeArguments(string inputPath, string outputPath, int width, int height)
     {
-        // H.264 High@L4.1 encoding in MP4 container (mp42 brand)
-        // This matches the format used by working eUnity-compatible DICOM files
+        // H.264 High@L4.1 encoding in MP4 container
+        // Use fragmented MP4 settings for better compatibility
         var args = new List<string>
         {
             "-i", $"\"{inputPath}\"",
@@ -213,8 +213,6 @@ public class VideoProcessingService
             "-pix_fmt", "yuv420p",
             "-g", "30",              // GOP size = 1 second
             "-an",                   // No audio
-            "-movflags", "+faststart",  // Move moov atom to start for streaming
-            "-brand", "mp42",        // Use mp42 brand like working files
             "-f", "mp4",
             "-y",
             $"\"{outputPath}\""

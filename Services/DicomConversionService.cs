@@ -135,6 +135,9 @@ public class DicomConversionService
         if (!string.IsNullOrWhiteSpace(patientMetadata.PerformingPhysicianName))
             dataset.Add(DicomTag.PerformingPhysicianName, patientMetadata.PerformingPhysicianName);
 
+        // Acquisition Context (empty sequence, but required for some viewers)
+        dataset.Add(DicomTag.AcquisitionContextSequence, new DicomSequence(DicomTag.AcquisitionContextSequence));
+
         return new DicomFile(dataset);
     }
 
