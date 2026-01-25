@@ -130,10 +130,27 @@ public class DicomConversionService
         // Equipment Module
         dataset.Add(DicomTag.ManufacturerModelName, Constants.AppName);
         dataset.Add(DicomTag.SoftwareVersions, Constants.AppVersion);
+        dataset.Add(DicomTag.StationName, "");
+        dataset.Add(DicomTag.InstitutionName, "");
+
+        // Secondary Capture Module (required for video DICOM)
+        dataset.Add(DicomTag.DateOfSecondaryCapture, PatientMetadata.FormatDicomDate(patientMetadata.StudyDate));
+        dataset.Add(DicomTag.TimeOfSecondaryCapture, PatientMetadata.FormatDicomTime(patientMetadata.StudyDate));
+        dataset.Add(DicomTag.SecondaryCaptureDeviceManufacturer, Constants.Manufacturer);
+        dataset.Add(DicomTag.SecondaryCaptureDeviceManufacturerModelName, Constants.AppName);
+        dataset.Add(DicomTag.SecondaryCaptureDeviceSoftwareVersions, Constants.AppVersion);
+
+        // Additional timing/duration elements
+        dataset.Add(DicomTag.EffectiveDuration, "0");
+        dataset.Add(DicomTag.SeriesDate, PatientMetadata.FormatDicomDate(patientMetadata.StudyDate));
+        dataset.Add(DicomTag.SeriesTime, PatientMetadata.FormatDicomTime(patientMetadata.StudyDate));
 
         // Performing Physician
         if (!string.IsNullOrWhiteSpace(patientMetadata.PerformingPhysicianName))
             dataset.Add(DicomTag.PerformingPhysicianName, patientMetadata.PerformingPhysicianName);
+
+        dataset.Add(DicomTag.OperatorsName, "");
+        dataset.Add(DicomTag.PatientOrientation, "");
 
         // Acquisition Context (empty sequence, but required for some viewers)
         dataset.Add(DicomTag.AcquisitionContextSequence, new DicomSequence(DicomTag.AcquisitionContextSequence));
