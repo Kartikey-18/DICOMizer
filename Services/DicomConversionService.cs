@@ -66,7 +66,11 @@ public class DicomConversionService
     /// </summary>
     private DicomFile CreateDicomDataset(VideoMetadata videoMetadata, PatientMetadata patientMetadata)
     {
-        var dataset = new DicomDataset();
+        // CRITICAL: Create dataset with encapsulated transfer syntax
+        // Setting it only in FileMetaInfo is not enough - the dataset internal
+        // transfer syntax must be set during construction for proper video encoding
+        var transferSyntax = DicomTransferSyntax.Lookup(DicomUID.Parse(Constants.Mpeg4TransferSyntaxUid));
+        var dataset = new DicomDataset(transferSyntax);
 
         // (0008,0008) ImageType
         dataset.Add(DicomTag.ImageType, "ORIGINAL", "SECONDARY");
@@ -202,19 +206,27 @@ public class DicomConversionService
     {
         var dataset = dicomFile.Dataset;
 
-        // Set transfer syntax to MPEG-4 AVC/H.264 High Profile
-        dicomFile.FileMetaInfo.TransferSyntax = DicomTransferSyntax.Lookup(DicomUID.Parse(Constants.Mpeg4TransferSyntaxUid));
+        // Ensure transfer syntax is also set in FileMetaInfo
+        var transferSyntax = DicomTransferSyntax.Lookup(DicomUID.Parse(Constants.Mpeg4TransferSyntaxUid));
+        dicomFile.FileMetaInfo.TransferSyntax = transferSyntax;
 
-        // For DICOM video, the entire H.264 stream is stored as a single frame
-        // with the video data encapsulated directly
+        // DICOM requires pixel data length to be even - pad if necessary
+        byte[] paddedVideoData = videoData;
+        if (videoData.Length % 2 != 0)
+        {
+            paddedVideoData = new byte[videoData.Length + 1];
+            Array.Copy(videoData, paddedVideoData, videoData.Length);
+            paddedVideoData[videoData.Length] = 0; // Pad with zero byte
+        }
+
+        // For DICOM video, the entire H.264/MP4 stream is stored as a single fragment
         var pixelData = new DicomOtherByteFragment(DicomTag.PixelData);
 
         // Add offset table (empty for single-frame video)
         pixelData.Fragments.Add(new MemoryByteBuffer(Array.Empty<byte>()));
 
         // Add the entire video as a single fragment
-        // DICOM video stores the complete H.264 bitstream as one encapsulated frame
-        pixelData.Fragments.Add(new MemoryByteBuffer(videoData));
+        pixelData.Fragments.Add(new MemoryByteBuffer(paddedVideoData));
 
         dataset.AddOrUpdate(pixelData);
     }
