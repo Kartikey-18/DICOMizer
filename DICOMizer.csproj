@@ -8,6 +8,7 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>DICOMizer</AssemblyName>
     <RootNamespace>DICOMizer</RootNamespace>
+    <ApplicationIcon>Resources\app.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,6 +20,11 @@
     <None Update="Resources\FFmpeg\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\app.ico" />
+    <Resource Include="Resources\logo.png" />
   </ItemGroup>
 
 </Project>

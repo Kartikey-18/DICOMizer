@@ -7,7 +7,8 @@
         Title="DICOMizer - Video to DICOM Converter"
         Height="750" Width="900"
         WindowStartupLocation="CenterScreen"
-        Background="#F5F5F5">
+        Background="#F5F5F5"
+        Icon="/Resources/app.ico">
 
     <Window.Resources>
         <Style x:Key="SectionHeader" TargetType="TextBlock">
@@ -48,7 +49,10 @@
 
         <!-- Header -->
         <Grid Grid.Row="0">
-            <TextBlock Text="DICOMizer" FontSize="24" FontWeight="Bold" Foreground="#007ACC" HorizontalAlignment="Left"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                <Image Source="/Resources/logo.png" Width="36" Height="36" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                <TextBlock Text="DICOMizer" FontSize="24" FontWeight="Bold" Foreground="#007ACC" VerticalAlignment="Center"/>
+            </StackPanel>
             <Button Name="SettingsButton" Content="Settings" HorizontalAlignment="Right"
                     Click="SettingsButton_Click" Padding="10,5"/>
         </Grid>
