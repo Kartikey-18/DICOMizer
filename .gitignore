@@ -44,3 +44,6 @@ Temp/
 # OS files
 .DS_Store
 Thumbs.db
+
+# IDE/Tool specific
+.claude/
