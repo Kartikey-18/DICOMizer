@@ -197,24 +197,28 @@ public class VideoProcessingService
 
     /// <summary>
     /// Builds FFmpeg transcode arguments for eUnity-compatible H.264 in MP4 container
-    /// Based on analysis of working DICOM files - eUnity expects Baseline profile
+    /// Based on analysis of working DICOM files - eUnity expects Baseline profile with mp42 brand
     /// </summary>
     private string BuildTranscodeArguments(string inputPath, string outputPath, int width, int height)
     {
-        // H.264 Baseline@L5.1 encoding in MP4 container
-        // Analysis of working eUnity files shows they use Baseline profile, not High
-        // moov atom at end (no faststart) to match working file structure
+        // H.264 Baseline@L5.1 encoding in MP4 container with mp42 brand
+        // Analysis of working eUnity files shows:
+        // - Baseline profile (not High)
+        // - Level 5.1
+        // - MP4 brand: mp42 (not isom)
+        // - moov atom at end (no faststart)
         var args = new List<string>
         {
             "-i", $"\"{inputPath}\"",
             "-c:v", "libx264",
-            "-profile:v", "baseline",  // Baseline profile like working files
-            "-level", "5.1",           // Level 5.1 like working files
+            "-profile:v", "baseline",
+            "-level", "5.1",
             "-r", "30",
             "-pix_fmt", "yuv420p",
-            "-g", "30",              // GOP size = 1 second
-            "-an",                   // No audio
+            "-g", "30",
+            "-an",
             "-f", "mp4",
+            "-brand", "mp42",        // Use mp42 brand like working files
             "-y",
             $"\"{outputPath}\""
         };

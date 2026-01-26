@@ -201,6 +201,7 @@ public class DicomConversionService
     /// <summary>
     /// Adds H.264 video data to DICOM file as encapsulated pixel data
     /// Uses proper DICOM encapsulation for video streams
+    /// Structure must match working files: empty offset table + single fragment with video
     /// </summary>
     private void AddVideoPixelData(DicomFile dicomFile, byte[] videoData)
     {
@@ -216,16 +217,27 @@ public class DicomConversionService
         {
             paddedVideoData = new byte[videoData.Length + 1];
             Array.Copy(videoData, paddedVideoData, videoData.Length);
-            paddedVideoData[videoData.Length] = 0; // Pad with zero byte
+            paddedVideoData[videoData.Length] = 0;
         }
 
-        // For DICOM video, the entire H.264/MP4 stream is stored as a single fragment
+        // Build the encapsulated pixel data manually to ensure correct structure:
+        // - Item 0: Empty offset table (8 bytes: item tag + 0 length)
+        // - Item 1: Video data (8 bytes header + data)
+        // - Sequence delimiter (8 bytes)
+        // This matches the working file structure exactly
+
+        // Use DicomOtherByteFragment but be explicit about the structure
         var pixelData = new DicomOtherByteFragment(DicomTag.PixelData);
 
-        // Add offset table (empty for single-frame video)
-        pixelData.Fragments.Add(new MemoryByteBuffer(Array.Empty<byte>()));
+        // First fragment MUST be the offset table (empty for video per DICOM standard)
+        // The OffsetTable property in fo-dicom handles this correctly
+        pixelData.OffsetTable.Clear();
 
-        // Add the entire video as a single fragment
+        // Add the video data as a single fragment
+        // Clear any existing fragments first to ensure clean state
+        while (pixelData.Fragments.Count > 0)
+            pixelData.Fragments.RemoveAt(pixelData.Fragments.Count - 1);
+
         pixelData.Fragments.Add(new MemoryByteBuffer(paddedVideoData));
 
         dataset.AddOrUpdate(pixelData);
