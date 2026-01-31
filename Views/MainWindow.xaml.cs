@@ -352,6 +352,7 @@ public partial class MainWindow : Window
             StudyDescription = StudyDescriptionTextBox.Text,
             SeriesDescription = SeriesDescriptionTextBox.Text,
             PerformingPhysicianName = PhysicianNameTextBox.Text,
+            Modality = (ModalityComboBox.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "ES",
             StudyDate = DateTime.Now,
             SeriesDate = DateTime.Now,
             ContentDate = DateTime.Now
@@ -377,6 +378,7 @@ public partial class MainWindow : Window
         StudyDescriptionTextBox.IsEnabled = false;
         SeriesDescriptionTextBox.IsEnabled = false;
         PhysicianNameTextBox.IsEnabled = false;
+        ModalityComboBox.IsEnabled = false;
         SaveToFileCheckBox.IsEnabled = false;
         SendToPacsCheckBox.IsEnabled = false;
     }
@@ -394,6 +396,7 @@ public partial class MainWindow : Window
         StudyDescriptionTextBox.IsEnabled = true;
         SeriesDescriptionTextBox.IsEnabled = true;
         PhysicianNameTextBox.IsEnabled = true;
+        ModalityComboBox.IsEnabled = true;
         SaveToFileCheckBox.IsEnabled = true;
         SendToPacsCheckBox.IsEnabled = true;
     }

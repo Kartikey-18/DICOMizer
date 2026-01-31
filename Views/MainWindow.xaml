@@ -151,6 +151,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="150"/>
@@ -191,9 +192,25 @@
                     <TextBlock Grid.Row="4" Grid.Column="0" Text="Physician Name" VerticalAlignment="Center" Margin="0,5"/>
                     <TextBox Name="PhysicianNameTextBox" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Margin="5" Padding="5"/>
 
+                    <!-- Modality -->
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Modality" VerticalAlignment="Center" Margin="0,5"/>
+                    <ComboBox Name="ModalityComboBox" Grid.Row="5" Grid.Column="1" Margin="5" Padding="5" SelectedIndex="0">
+                        <ComboBoxItem Content="ES - Endoscopy" Tag="ES"/>
+                        <ComboBoxItem Content="DX - Digital Radiography" Tag="DX"/>
+                        <ComboBoxItem Content="US - Ultrasound" Tag="US"/>
+                        <ComboBoxItem Content="MR - Magnetic Resonance" Tag="MR"/>
+                        <ComboBoxItem Content="CT - Computed Tomography" Tag="CT"/>
+                        <ComboBoxItem Content="CR - Computed Radiography" Tag="CR"/>
+                        <ComboBoxItem Content="ECG - Electrocardiography" Tag="ECG"/>
+                        <ComboBoxItem Content="MG - Mammography" Tag="MG"/>
+                        <ComboBoxItem Content="NM - Nuclear Medicine" Tag="NM"/>
+                        <ComboBoxItem Content="OT - Other" Tag="OT"/>
+                        <ComboBoxItem Content="XA - X-Ray Angiography" Tag="XA"/>
+                    </ComboBox>
+
                     <!-- Output Options -->
-                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Output Options" VerticalAlignment="Center" Margin="0,15,0,5"/>
-                    <StackPanel Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="5,15,5,5">
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Output Options" VerticalAlignment="Center" Margin="0,15,0,5"/>
+                    <StackPanel Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="5,15,5,5">
                         <CheckBox Name="SaveToFileCheckBox" Content="Save to file" IsChecked="True" Margin="0,0,20,0"/>
                         <CheckBox Name="SendToPacsCheckBox" Content="Send to PACS" Margin="0,0,20,0"/>
                     </StackPanel>

@@ -89,7 +89,7 @@ public class DicomConversionService
         // (0008,0050) AccessionNumber
         dataset.Add(DicomTag.AccessionNumber, patientMetadata.AccessionNumber ?? "");
         // (0008,0060) Modality
-        dataset.Add(DicomTag.Modality, "ES");
+        dataset.Add(DicomTag.Modality, patientMetadata.Modality ?? "ES");
         // (0008,0064) ConversionType
         dataset.Add(DicomTag.ConversionType, "DV");
         // (0008,0070) Manufacturer

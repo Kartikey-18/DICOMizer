@@ -33,6 +33,8 @@ public class PatientMetadata
     [StringLength(16, ErrorMessage = "Accession Number must be 16 characters or less")]
     public string? AccessionNumber { get; set; }
 
+    public string Modality { get; set; } = "ES";
+
     public DateTime StudyDate { get; set; } = DateTime.Now;
     public DateTime SeriesDate { get; set; } = DateTime.Now;
     public DateTime ContentDate { get; set; } = DateTime.Now;
