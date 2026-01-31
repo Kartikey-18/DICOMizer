@@ -351,7 +351,6 @@ public partial class MainWindow : Window
             PatientBirthDate = PatientBirthDatePicker.SelectedDate?.ToString("yyyyMMdd"),
             PatientSex = (PatientSexComboBox.SelectedItem as ComboBoxItem)?.Tag?.ToString(),
             StudyDescription = StudyDescriptionTextBox.Text,
-            PerformingPhysicianName = PhysicianNameTextBox.Text,
             Modality = (ModalityComboBox.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "ES",
             StudyDate = GetStudyDateTime(),
             SeriesDate = GetStudyDateTime(),
@@ -386,7 +385,7 @@ public partial class MainWindow : Window
         StudyDescriptionTextBox.IsEnabled = false;
         StudyDatePicker.IsEnabled = false;
         StudyTimeTextBox.IsEnabled = false;
-        PhysicianNameTextBox.IsEnabled = false;
+
         ModalityComboBox.IsEnabled = false;
         SaveToFileCheckBox.IsEnabled = false;
         SendToPacsCheckBox.IsEnabled = false;
@@ -405,7 +404,7 @@ public partial class MainWindow : Window
         StudyDescriptionTextBox.IsEnabled = true;
         StudyDatePicker.IsEnabled = true;
         StudyTimeTextBox.IsEnabled = true;
-        PhysicianNameTextBox.IsEnabled = true;
+
         ModalityComboBox.IsEnabled = true;
         SaveToFileCheckBox.IsEnabled = true;
         SendToPacsCheckBox.IsEnabled = true;
