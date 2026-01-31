@@ -196,16 +196,10 @@
                     <TextBlock Grid.Row="5" Grid.Column="0" Text="Modality" VerticalAlignment="Center" Margin="0,5"/>
                     <ComboBox Name="ModalityComboBox" Grid.Row="5" Grid.Column="1" Margin="5" Padding="5" SelectedIndex="0">
                         <ComboBoxItem Content="ES - Endoscopy" Tag="ES"/>
-                        <ComboBoxItem Content="DX - Digital Radiography" Tag="DX"/>
-                        <ComboBoxItem Content="US - Ultrasound" Tag="US"/>
-                        <ComboBoxItem Content="MR - Magnetic Resonance" Tag="MR"/>
-                        <ComboBoxItem Content="CT - Computed Tomography" Tag="CT"/>
-                        <ComboBoxItem Content="CR - Computed Radiography" Tag="CR"/>
-                        <ComboBoxItem Content="ECG - Electrocardiography" Tag="ECG"/>
-                        <ComboBoxItem Content="MG - Mammography" Tag="MG"/>
-                        <ComboBoxItem Content="NM - Nuclear Medicine" Tag="NM"/>
-                        <ComboBoxItem Content="OT - Other" Tag="OT"/>
+                        <ComboBoxItem Content="RF - Radiofluoroscopy" Tag="RF"/>
                         <ComboBoxItem Content="XA - X-Ray Angiography" Tag="XA"/>
+                        <ComboBoxItem Content="XC - External-camera Photography" Tag="XC"/>
+                        <ComboBoxItem Content="US - Ultrasound" Tag="US"/>
                     </ComboBox>
 
                     <!-- Output Options -->
