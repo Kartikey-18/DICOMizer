@@ -31,6 +31,7 @@ public partial class MainWindow : Window
         _settingsService = new SettingsService();
 
         Loaded += MainWindow_Loaded;
+        StudyDatePicker.SelectedDate = DateTime.Now;
     }
 
     private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -350,13 +351,20 @@ public partial class MainWindow : Window
             PatientBirthDate = PatientBirthDatePicker.SelectedDate?.ToString("yyyyMMdd"),
             PatientSex = (PatientSexComboBox.SelectedItem as ComboBoxItem)?.Tag?.ToString(),
             StudyDescription = StudyDescriptionTextBox.Text,
-            SeriesDescription = SeriesDescriptionTextBox.Text,
             PerformingPhysicianName = PhysicianNameTextBox.Text,
             Modality = (ModalityComboBox.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "ES",
-            StudyDate = DateTime.Now,
-            SeriesDate = DateTime.Now,
-            ContentDate = DateTime.Now
+            StudyDate = GetStudyDateTime(),
+            SeriesDate = GetStudyDateTime(),
+            ContentDate = GetStudyDateTime()
         };
+    }
+
+    private DateTime GetStudyDateTime()
+    {
+        var date = StudyDatePicker.SelectedDate ?? DateTime.Now;
+        if (TimeSpan.TryParse(StudyTimeTextBox.Text, out var time))
+            return date.Date + time;
+        return date;
     }
 
     private void UpdateStatus(string message, int progress)
@@ -376,7 +384,8 @@ public partial class MainWindow : Window
         PatientBirthDatePicker.IsEnabled = false;
         PatientSexComboBox.IsEnabled = false;
         StudyDescriptionTextBox.IsEnabled = false;
-        SeriesDescriptionTextBox.IsEnabled = false;
+        StudyDatePicker.IsEnabled = false;
+        StudyTimeTextBox.IsEnabled = false;
         PhysicianNameTextBox.IsEnabled = false;
         ModalityComboBox.IsEnabled = false;
         SaveToFileCheckBox.IsEnabled = false;
@@ -394,7 +403,8 @@ public partial class MainWindow : Window
         PatientBirthDatePicker.IsEnabled = true;
         PatientSexComboBox.IsEnabled = true;
         StudyDescriptionTextBox.IsEnabled = true;
-        SeriesDescriptionTextBox.IsEnabled = true;
+        StudyDatePicker.IsEnabled = true;
+        StudyTimeTextBox.IsEnabled = true;
         PhysicianNameTextBox.IsEnabled = true;
         ModalityComboBox.IsEnabled = true;
         SaveToFileCheckBox.IsEnabled = true;

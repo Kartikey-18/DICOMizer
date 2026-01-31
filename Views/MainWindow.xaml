@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="DICOMizer - Video to DICOM Converter"
         Height="750" Width="900"
@@ -184,9 +185,14 @@
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Study Description" VerticalAlignment="Center" Margin="0,5"/>
                     <TextBox Name="StudyDescriptionTextBox" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="5" Padding="5"/>
 
-                    <!-- Series Description -->
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Series Description" VerticalAlignment="Center" Margin="0,5"/>
-                    <TextBox Name="SeriesDescriptionTextBox" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="5" Padding="5"/>
+                    <!-- Study Date -->
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Study Date" VerticalAlignment="Center" Margin="0,5"/>
+                    <DatePicker Name="StudyDatePicker" Grid.Row="3" Grid.Column="1" Margin="5" Padding="5"/>
+
+                    <!-- Study Time -->
+                    <TextBlock Grid.Row="3" Grid.Column="2" Text="Study Time" VerticalAlignment="Center" Margin="10,5,0,5"/>
+                    <TextBox Name="StudyTimeTextBox" Grid.Row="3" Grid.Column="3" Margin="5" Padding="5"
+                             Text="{Binding Source={x:Static sys:DateTime.Now}, StringFormat=HH:mm:ss, Mode=OneTime}"/>
 
                     <!-- Performing Physician -->
                     <TextBlock Grid.Row="4" Grid.Column="0" Text="Physician Name" VerticalAlignment="Center" Margin="0,5"/>
