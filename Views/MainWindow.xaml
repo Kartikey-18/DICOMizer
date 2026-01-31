@@ -60,31 +60,82 @@
         <!-- Video Selection Section -->
         <GroupBox Grid.Row="1" Header="Video File" Margin="0,15,0,0" Padding="15">
             <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+                <!-- Drop Zone (visible when no video loaded) -->
+                <Border Name="DropZoneBorder"
+                        BorderBrush="#B0C4DE" BorderThickness="2" CornerRadius="8"
+                        Background="#F8FAFC" MinHeight="160" Margin="0,0,0,0"
+                        Cursor="Hand" MouseLeftButtonDown="DropZone_Click"
+                        AllowDrop="True" Drop="DropZone_Drop" DragEnter="DropZone_DragEnter" DragLeave="DropZone_DragLeave">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Style.Resources>
+                                <Storyboard x:Key="PulseStoryboard">
+                                    <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                     From="0.4" To="1.0" Duration="0:0:1.5"
+                                                     AutoReverse="True" RepeatBehavior="Forever"/>
+                                </Storyboard>
+                            </Style.Resources>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock Text="&#xE8B7;" FontFamily="Segoe MDL2 Assets" FontSize="48"
+                                   Foreground="#007ACC" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                        <TextBlock Text="Drop video here" FontSize="16" FontWeight="SemiBold"
+                                   Foreground="#333333" HorizontalAlignment="Center"/>
+                        <TextBlock Text="or click to browse" FontSize="13"
+                                   Foreground="#888888" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                        <TextBlock Text="MP4, AVI, MOV, MKV, WMV, FLV, M4V" FontSize="11"
+                                   Foreground="#AAAAAA" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </Border>
 
-                <TextBox Name="VideoPathTextBox" Grid.Row="0" Grid.Column="0"
-                         IsReadOnly="True" Margin="0,0,10,0" Padding="5"/>
-                <Button Name="BrowseButton" Grid.Row="0" Grid.Column="1"
-                        Content="Browse..." Width="100" Margin="0,0,10,0"
-                        Click="BrowseButton_Click"/>
-                <Button Name="TrimButton" Grid.Row="0" Grid.Column="2"
-                        Content="Trim Video" Width="100" IsEnabled="False"
-                        Click="TrimButton_Click"/>
+                <!-- Video Info Card (visible when video is loaded) -->
+                <Border Name="VideoInfoPanel" Visibility="Collapsed"
+                        BorderBrush="#D0D0D0" BorderThickness="1" CornerRadius="8"
+                        Background="White" Padding="16">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
 
-                <TextBlock Name="VideoInfoTextBlock" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
-                           Margin="0,10,0,0" Foreground="#666666"/>
+                        <!-- File name and remove button -->
+                        <Grid Grid.Row="0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE8B2;" FontFamily="Segoe MDL2 Assets" FontSize="18"
+                                           Foreground="#007ACC" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <TextBlock Name="VideoFileNameText" FontSize="15" FontWeight="SemiBold"
+                                           Foreground="#222222" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <Button Name="RemoveVideoButton" Content="&#xE711;" FontFamily="Segoe MDL2 Assets"
+                                    HorizontalAlignment="Right" VerticalAlignment="Center"
+                                    Background="Transparent" BorderThickness="0" FontSize="14"
+                                    Foreground="#999999" Cursor="Hand" Padding="6,4"
+                                    ToolTip="Remove video" Click="RemoveVideoButton_Click"/>
+                        </Grid>
 
-                <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Background="Black" Height="250" Margin="0,10,0,0">
-                    <MediaElement Name="VideoPreview" LoadedBehavior="Manual" Stretch="Uniform"/>
+                        <!-- Video details -->
+                        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="28,8,0,0">
+                            <TextBlock Name="VideoInfoTextBlock" Foreground="#666666" FontSize="13"/>
+                        </StackPanel>
+
+                        <!-- Hidden elements for compatibility -->
+                        <TextBox Name="VideoPathTextBox" Visibility="Collapsed"/>
+                        <MediaElement Name="VideoPreview" LoadedBehavior="Manual" Stretch="Uniform" Visibility="Collapsed"/>
+
+                        <!-- Action buttons -->
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="28,12,0,0">
+                            <Button Name="BrowseButton" Content="Change File"
+                                    Padding="12,6" Margin="0,0,10,0" FontSize="12"
+                                    Background="#E8F0FE" Foreground="#007ACC" BorderThickness="0"
+                                    Cursor="Hand" Click="BrowseButton_Click"/>
+                            <Button Name="TrimButton" Content="Trim Video"
+                                    Padding="12,6" FontSize="12" IsEnabled="False"
+                                    Background="#E8F0FE" Foreground="#007ACC" BorderThickness="0"
+                                    Cursor="Hand" Click="TrimButton_Click"/>
+                        </StackPanel>
+                    </Grid>
                 </Border>
             </Grid>
         </GroupBox>
